@@ -1,0 +1,31 @@
+{
+  "name": "Example Movie",
+  "tmdb_id": "550",
+  "imdb_id": "tt0137523",
+  "movieposter": [
+    {"id": "101", "url": "http://assets.fanart.tv/fanart/movies/550/movieposter/example-poster-en.jpg", "lang": "en", "likes": "12"},
+    {"id": "102", "url": "https://assets.fanart.tv/fanart/movies/550/movieposter/example-poster-textless.jpg", "lang": "00", "likes": 3},
+    {"id": "103", "url": "http://assets.fanart.tv/fanart/movies/550/movieposter/example-poster-en.jpg", "lang": "en", "likes": "1"}
+  ],
+  "moviebackground": [
+    {"id": "201", "url": "http://assets.fanart.tv/fanart/movies/550/moviebackground/example-background.jpg", "lang": "en", "likes": "4"}
+  ],
+  "hdmovielogo": [
+    {"id": "301", "url": "http://assets.fanart.tv/fanart/movies/550/hdmovielogo/example-hdlogo.png", "lang": "en", "likes": "0"}
+  ],
+  "movielogo": [
+    {"id": "302", "url": "http://assets.fanart.tv/fanart/movies/550/movielogo/example-logo.png", "lang": "en", "likes": "40"}
+  ],
+  "hdmovieclearart": [
+    {"id": "401", "url": "http://assets.fanart.tv/fanart/movies/550/hdmovieclearart/example-hdclearart.png", "lang": "de", "likes": "2"}
+  ],
+  "moviedisc": [
+    {"id": "501", "url": "http://assets.fanart.tv/fanart/movies/550/moviedisc/example-disc.png", "lang": "en", "likes": "1", "disc": "1", "disc_type": "bluray"}
+  ],
+  "moviebanner": [
+    {"id": "601", "url": "ftp://assets.fanart.tv/not-a-web-url.jpg", "lang": "en", "likes": "1"}
+  ],
+  "moviethumb": [
+    {"id": "701", "url": "http://assets.fanart.tv/fanart/movies/550/moviethumb/example-thumb.jpg", "lang": "en", "likes": null}
+  ]
+}

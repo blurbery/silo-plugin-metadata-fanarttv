@@ -1,0 +1,34 @@
+{
+  "name": "Example Show",
+  "thetvdb_id": "81189",
+  "tvposter": [
+    {"id": "1101", "url": "http://assets.fanart.tv/fanart/tv/81189/tvposter/example-tvposter.jpg", "lang": "en", "likes": "6"}
+  ],
+  "seasonposter": [
+    {"id": "1201", "url": "http://assets.fanart.tv/fanart/tv/81189/seasonposter/example-season1.jpg", "lang": "en", "likes": "2", "season": "1"},
+    {"id": "1202", "url": "http://assets.fanart.tv/fanart/tv/81189/seasonposter/example-season2.jpg", "lang": "en", "likes": "5", "season": "2"},
+    {"id": "1203", "url": "http://assets.fanart.tv/fanart/tv/81189/seasonposter/example-specials.jpg", "lang": "00", "likes": "1", "season": "0"},
+    {"id": "1204", "url": "http://assets.fanart.tv/fanart/tv/81189/seasonposter/example-all.jpg", "lang": "en", "likes": "9", "season": "all"}
+  ],
+  "showbackground": [
+    {"id": "1301", "url": "http://assets.fanart.tv/fanart/tv/81189/showbackground/example-background.jpg", "lang": "en", "likes": "3", "season": "all"}
+  ],
+  "hdtvlogo": [
+    {"id": "1401", "url": "http://assets.fanart.tv/fanart/tv/81189/hdtvlogo/example-hdtvlogo.png", "lang": "en", "likes": "8"}
+  ],
+  "clearlogo": [
+    {"id": "1402", "url": "http://assets.fanart.tv/fanart/tv/81189/clearlogo/example-clearlogo.png", "lang": "en", "likes": "2"}
+  ],
+  "hdclearart": [
+    {"id": "1501", "url": "http://assets.fanart.tv/fanart/tv/81189/hdclearart/example-hdclearart.png", "lang": "en", "likes": "1"}
+  ],
+  "tvbanner": [
+    {"id": "1601", "url": "http://assets.fanart.tv/fanart/tv/81189/tvbanner/example-banner.jpg", "lang": "en", "likes": "1"}
+  ],
+  "tvthumb": [
+    {"id": "1701", "url": "http://assets.fanart.tv/fanart/tv/81189/tvthumb/example-thumb.jpg", "lang": "en", "likes": "1"}
+  ],
+  "characterart": [
+    {"id": "1801", "url": "http://assets.fanart.tv/fanart/tv/81189/characterart/example-character.png", "lang": "en", "likes": "1"}
+  ]
+}

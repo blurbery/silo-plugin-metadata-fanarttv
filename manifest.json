@@ -1,0 +1,82 @@
+{
+  "plugin_id": "blurbery.fanarttv",
+  "version": "0.1.0",
+  "checksum": "__CHECKSUM__",
+  "silo_api_version": "v1",
+  "supported_platforms": [
+    {
+      "os": "darwin",
+      "arch": "arm64"
+    },
+    {
+      "os": "linux",
+      "arch": "amd64"
+    },
+    {
+      "os": "linux",
+      "arch": "arm64"
+    }
+  ],
+  "capabilities": [
+    {
+      "type": "metadata_provider.v1",
+      "id": "fanarttv",
+      "display_name": "fanart.tv",
+      "description": "Posters, backgrounds, logos, clear art, disc art, banners, thumbs and season posters from fanart.tv. Artwork only, never identifies an item.",
+      "metadata": {
+        "lookup_provider_ids": [
+          "tmdb",
+          "imdb",
+          "tvdb"
+        ],
+        "lookup_images": true,
+        "default_priority": {
+          "movie": 5,
+          "series": 5,
+          "season": 5
+        }
+      }
+    }
+  ],
+  "global_config_schema": [
+    {
+      "key": "account",
+      "title": "fanart.tv Account",
+      "description": "fanart.tv API key, and optionally your personal client key. Without an API key the provider stays idle and contributes nothing.",
+      "json_schema": "{\"type\":\"object\",\"properties\":{\"api_key\":{\"type\":\"string\"},\"client_key\":{\"type\":\"string\"}},\"additionalProperties\":false}",
+      "required": true,
+      "admin_form": {
+        "submit_label": "Save fanart.tv account",
+        "fields": [
+          {
+            "key": "api_key",
+            "label": "API Key",
+            "description": "API key from your fanart.tv account.",
+            "control": "ADMIN_FORM_CONTROL_PASSWORD",
+            "secret": true
+          },
+          {
+            "key": "client_key",
+            "label": "Personal Client Key",
+            "description": "Optional. Your personal API key from fanart.tv, which shows new artwork sooner.",
+            "control": "ADMIN_FORM_CONTROL_PASSWORD",
+            "secret": true
+          }
+        ]
+      }
+    }
+  ],
+  "presentation": {
+    "display_name": "fanart.tv Artwork",
+    "summary": "Posters, backgrounds, logos, clear art, disc art, banners, thumbs and season posters from fanart.tv.",
+    "description_markdown": "Adds fanart.tv's community artwork for movies and series: posters, backgrounds, HD logos, clear art, disc art, banners and thumbs, plus season posters in the image picker.\n\nThis provider never identifies an item and fills no metadata. It looks titles up by the TMDB, IMDb or TVDB ID a primary provider such as TMDB already resolved. Series are looked up by TVDB ID only, the one ID fanart.tv files shows under.\n\nIt needs a Silo build whose metadata service honours `lookup_images`. On an older build the host never asks it for artwork.",
+    "setup_markdown": "Sign in to fanart.tv, create an API key, and add it below. A personal client key is optional and shows new artwork sooner.\n\nInstalling adds **fanart.tv** to every library's provider chain below TMDB. There it adds choices to the image picker and fills artwork TMDB does not have, such as clear art, disc art, banners and thumbs. To prefer fanart.tv's posters, backgrounds and logos over TMDB's, move it above TMDB in a library's chain, then refresh the library's metadata.",
+    "homepage_url": "https://fanart.tv",
+    "source_url": "https://github.com/blurbery/silo-plugin-metadata-fanarttv",
+    "support_url": "https://github.com/blurbery/silo-plugin-metadata-fanarttv/issues",
+    "changelog_url": "https://github.com/blurbery/silo-plugin-metadata-fanarttv/releases",
+    "publisher_name": "blurbery",
+    "publisher_url": "https://github.com/blurbery",
+    "license_spdx": "AGPL-3.0-only"
+  }
+}

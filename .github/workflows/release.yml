@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    # Every platform cross-compiles on Linux (CGO is off), so a release never
+    # needs a macOS runner.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.26'
+
+      - name: Check the tag matches manifest.json
+        run: |
+          manifest_version=$(jq -r '.version' manifest.json)
+          if [ "v${manifest_version}" != "${GITHUB_REF_NAME}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match manifest.json version ${manifest_version}."
+            exit 1
+          fi
+
+      - name: Build plugin binaries
+        env:
+          CGO_ENABLED: '0'
+          GOWORK: off
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          mkdir -p dist
+          : > dist/checksums.txt
+          for platform in linux/amd64 linux/arm64 darwin/arm64; do
+            goos="${platform%%/*}"
+            goarch="${platform##*/}"
+            binary="plugin-${goos}-${goarch}"
+            GOOS="$goos" GOARCH="$goarch" go build -trimpath -ldflags="-s -w -X main.version=${version}" -o "dist/${binary}" .
+            (cd dist && sha256sum "$binary" >> checksums.txt)
+          done
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/plugin-linux-amd64
+            dist/plugin-linux-arm64
+            dist/plugin-darwin-arm64
+            dist/checksums.txt
+          generate_release_notes: true

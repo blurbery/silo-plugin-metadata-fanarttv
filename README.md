@@ -20,14 +20,24 @@ artwork, so it installs but does nothing.
 
 ## Setup
 
-1. Sign in to fanart.tv and create an API key. A personal client key is
-   optional and shows newly added artwork sooner.
-2. Install the plugin in Silo and enter the key in its settings.
-3. Installing adds **fanart.tv** to every library's provider chain below TMDB.
-   There it adds choices to the image picker and fills artwork TMDB does not
-   have, such as clear art, disc art, banners and thumbs.
-4. To prefer fanart.tv's posters, backgrounds and logos, move it above TMDB in a
-   library's chain, then refresh the library's metadata.
+No setup is needed. Release builds carry a fanart.tv project key, set from the
+`FANARTTV_API_KEY` Actions secret, and the release workflow refuses to publish
+without it. The plugin settings take an optional personal client key, which
+shows newly added artwork sooner, and an optional project key that replaces
+the built-in one.
+
+**fanart.tv** sits below TMDB in each library's provider chain. There it adds
+choices to the image picker and fills artwork TMDB does not have, such as clear
+art, disc art, banners and thumbs. To prefer fanart.tv's posters, backgrounds
+and logos, move it above TMDB in a library's chain, then refresh the library's
+metadata.
+
+## Installing by default
+
+Each release publishes `catalog.json`, a one-plugin Silo catalogue, so a Silo
+build can add
+`https://github.com/blurbery/silo-plugin-metadata-fanarttv/releases/latest/download/catalog.json`
+as a plugin repository and install and update the plugin from it.
 
 ## How artwork is chosen
 
@@ -56,7 +66,9 @@ make build
 ```
 
 `make build-all` cross-compiles the Linux and macOS binaries into `dist/`.
-Pushing a `v*` tag that matches `manifest.json`'s version publishes a release.
+Pushing a `v*` tag that matches `manifest.json`'s version publishes a release
+with the binaries, `checksums.txt` and `catalog.json` (written by
+`cmd/catalog`).
 
 ## Licence
 

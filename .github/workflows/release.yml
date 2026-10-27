@@ -28,10 +28,23 @@ jobs:
             exit 1
           fi
 
+      # Silo installs this plugin by default and it is meant to work with no
+      # setup, so a release without the built-in key is refused rather than
+      # shipped idle.
+      - name: Require the built-in fanart.tv key
+        env:
+          FANARTTV_API_KEY: ${{ secrets.FANARTTV_API_KEY }}
+        run: |
+          if [ -z "$FANARTTV_API_KEY" ]; then
+            echo "The FANARTTV_API_KEY Actions secret is not set."
+            exit 1
+          fi
+
       - name: Build plugin binaries
         env:
           CGO_ENABLED: '0'
           GOWORK: off
+          FANARTTV_API_KEY: ${{ secrets.FANARTTV_API_KEY }}
         run: |
           version="${GITHUB_REF_NAME#v}"
           mkdir -p dist
@@ -40,9 +53,24 @@ jobs:
             goos="${platform%%/*}"
             goarch="${platform##*/}"
             binary="plugin-${goos}-${goarch}"
-            GOOS="$goos" GOARCH="$goarch" go build -trimpath -ldflags="-s -w -X main.version=${version}" -o "dist/${binary}" .
+            GOOS="$goos" GOARCH="$goarch" go build -trimpath \
+              -ldflags="-s -w -X main.version=${version} -X main.builtinAPIKey=${FANARTTV_API_KEY}" \
+              -o "dist/${binary}" .
             (cd dist && sha256sum "$binary" >> checksums.txt)
           done
+
+      # catalog.json is a one-plugin Silo catalogue in the same shape as the
+      # official one. Silo reads it from releases/latest/download/catalog.json,
+      # which always names this release's binaries and their checksums.
+      - name: Write the Silo catalogue
+        env:
+          GOWORK: off
+        run: |
+          go run ./cmd/catalog \
+            -version "${GITHUB_REF_NAME#v}" \
+            -repo "https://github.com/${GITHUB_REPOSITORY}" \
+            -base "https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}" \
+            -checksums dist/checksums.txt > dist/catalog.json
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -52,4 +80,5 @@ jobs:
             dist/plugin-linux-arm64
             dist/plugin-darwin-arm64
             dist/checksums.txt
+            dist/catalog.json
           generate_release_notes: true

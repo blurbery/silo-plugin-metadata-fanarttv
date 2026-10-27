@@ -31,6 +31,12 @@ import (
 // version is set at build time via -ldflags "-X main.version=...".
 var version string
 
+// builtinAPIKey is the fanart.tv project key, set at release time via
+// -ldflags "-X main.builtinAPIKey=..." from the FANARTTV_API_KEY Actions
+// secret, so the plugin works with no setup. A key in the plugin settings
+// replaces it. Local and test builds have none.
+var builtinAPIKey string
+
 //go:embed manifest.json
 var manifestJSON []byte
 
@@ -57,6 +63,9 @@ func (s *runtimeServer) GetManifest(context.Context, *pluginv1.GetManifestReques
 
 func (s *runtimeServer) Configure(_ context.Context, req *pluginv1.ConfigureRequest) (*pluginv1.ConfigureResponse, error) {
 	apiKey, clientKey := keysFromConfig(req.GetConfig())
+	if apiKey == "" {
+		apiKey = builtinAPIKey
+	}
 	s.client.SetKeys(apiKey, clientKey)
 	return &pluginv1.ConfigureResponse{}, nil
 }
@@ -173,6 +182,7 @@ func newClient() *fanart.Client {
 		userAgent += "/" + version
 	}
 	client.SetUserAgent(userAgent)
+	client.SetKeys(builtinAPIKey, "")
 	return client
 }
 
@@ -305,7 +315,7 @@ func (r *failureReporter) report(err error) {
 	}
 	r.last, r.lastKind, r.loggedAt = err, kind, now
 	if kind == fanart.ErrNotConfigured {
-		r.logf("fanart.tv: no API key set; add one in the plugin settings. Artwork lookups answer empty until then.")
+		r.logf("fanart.tv: this build has no built-in API key and none is set in the plugin settings. Artwork lookups answer empty until then.")
 		return
 	}
 	r.logf("fanart.tv: artwork lookups are failing and answer empty: %v", err)

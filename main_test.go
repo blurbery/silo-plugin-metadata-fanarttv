@@ -242,6 +242,57 @@ func TestGetMetadataAndSearchMakeNoRequest(t *testing.T) {
 	}
 }
 
+func TestBuiltinKeyIsUsedUntilSettingsReplaceIt(t *testing.T) {
+	previous := builtinAPIKey
+	builtinAPIKey = "built-in-key"
+	t.Cleanup(func() { builtinAPIKey = previous })
+
+	var seen []string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		seen = append(seen, r.Header.Get("api-key")+"|"+r.Header.Get("client-key"))
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	t.Cleanup(server.Close)
+
+	runtime := &runtimeServer{client: newClient()}
+	runtime.client.SetBaseURL(server.URL)
+	metadata := &metadataServer{runtime: runtime, reporter: newFailureReporter()}
+	lookup := func(tmdbID string) {
+		t.Helper()
+		if _, err := metadata.GetImages(context.Background(), &pluginv1.GetImagesRequest{
+			ItemType: "movie", ProviderIds: providerIDs(t, map[string]any{"tmdb": tmdbID}),
+		}); err != nil {
+			t.Fatalf("GetImages() error = %v", err)
+		}
+	}
+	configure := func(values map[string]any) {
+		t.Helper()
+		var entries []*pluginv1.ConfigEntry
+		if values != nil {
+			entries = []*pluginv1.ConfigEntry{{Key: "account", Value: providerIDs(t, values)}}
+		}
+		if _, err := runtime.Configure(context.Background(), &pluginv1.ConfigureRequest{Config: entries}); err != nil {
+			t.Fatalf("Configure() error = %v", err)
+		}
+	}
+
+	// Before Silo configures the plugin, and after it configures no keys.
+	lookup("1")
+	configure(nil)
+	lookup("2")
+	// A personal client key rides along with the built-in project key.
+	configure(map[string]any{"client_key": "personal"})
+	lookup("3")
+	// An administrator's own project key replaces the built-in one.
+	configure(map[string]any{"api_key": "own-key"})
+	lookup("4")
+
+	want := []string{"built-in-key|", "built-in-key|", "built-in-key|personal", "own-key|"}
+	if fmt.Sprint(seen) != fmt.Sprint(want) {
+		t.Fatalf("keys sent = %v, want %v", seen, want)
+	}
+}
+
 func TestKeysFromConfig(t *testing.T) {
 	account, err := structpb.NewStruct(map[string]any{"api_key": " project ", "client_key": " personal "})
 	if err != nil {
@@ -289,6 +340,11 @@ func TestManifestDeclaresArtworkLookup(t *testing.T) {
 	}
 	if _, bulk := metadata["bulk_lookup_limit"]; bulk {
 		t.Error("bulk_lookup_limit would put an artwork source into the ratings enrichment pass")
+	}
+	for _, schema := range manifest.GetGlobalConfigSchema() {
+		if schema.GetRequired() {
+			t.Errorf("config %q is required; a default install must work on its built-in key", schema.GetKey())
+		}
 	}
 	priorities, _ := metadata["default_priority"].(map[string]any)
 	for _, level := range []string{"movie", "series", "season"} {

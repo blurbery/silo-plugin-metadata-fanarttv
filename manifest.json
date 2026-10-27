@@ -1,6 +1,6 @@
 {
   "plugin_id": "blurbery.fanarttv",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "checksum": "__CHECKSUM__",
   "silo_api_version": "v1",
   "supported_platforms": [
@@ -42,16 +42,16 @@
     {
       "key": "account",
       "title": "fanart.tv Account",
-      "description": "fanart.tv API key, and optionally your personal client key. Without an API key the provider stays idle and contributes nothing.",
+      "description": "Optional. The plugin works with its built-in fanart.tv project key; add your own keys here to replace it or to see new artwork sooner.",
       "json_schema": "{\"type\":\"object\",\"properties\":{\"api_key\":{\"type\":\"string\"},\"client_key\":{\"type\":\"string\"}},\"additionalProperties\":false}",
-      "required": true,
+      "required": false,
       "admin_form": {
         "submit_label": "Save fanart.tv account",
         "fields": [
           {
             "key": "api_key",
             "label": "API Key",
-            "description": "API key from your fanart.tv account.",
+            "description": "Optional. A fanart.tv project key to use instead of the built-in one.",
             "control": "ADMIN_FORM_CONTROL_PASSWORD",
             "secret": true
           },
@@ -70,7 +70,7 @@
     "display_name": "fanart.tv Artwork",
     "summary": "Posters, backgrounds, logos, clear art, disc art, banners, thumbs and season posters from fanart.tv.",
     "description_markdown": "Adds fanart.tv's community artwork for movies and series: posters, backgrounds, HD logos, clear art, disc art, banners and thumbs, plus season posters in the image picker.\n\nThis provider never identifies an item and fills no metadata. It looks titles up by the TMDB, IMDb or TVDB ID a primary provider such as TMDB already resolved. Series are looked up by TVDB ID only, the one ID fanart.tv files shows under.\n\nIt needs a Silo build whose metadata service honours `lookup_images`. On an older build the host never asks it for artwork.",
-    "setup_markdown": "Sign in to fanart.tv, create an API key, and add it below. A personal client key is optional and shows new artwork sooner.\n\nInstalling adds **fanart.tv** to every library's provider chain below TMDB. There it adds choices to the image picker and fills artwork TMDB does not have, such as clear art, disc art, banners and thumbs. To prefer fanart.tv's posters, backgrounds and logos over TMDB's, move it above TMDB in a library's chain, then refresh the library's metadata.",
+    "setup_markdown": "No setup is needed: the plugin uses its built-in fanart.tv project key. A personal client key from your fanart.tv account is optional and shows new artwork sooner.\n\n**fanart.tv** sits below TMDB in each library's provider chain. There it adds choices to the image picker and fills artwork TMDB does not have, such as clear art, disc art, banners and thumbs. To prefer fanart.tv's posters, backgrounds and logos over TMDB's, move it above TMDB in a library's chain, then refresh the library's metadata.",
     "homepage_url": "https://fanart.tv",
     "source_url": "https://github.com/blurbery/silo-plugin-metadata-fanarttv",
     "support_url": "https://github.com/blurbery/silo-plugin-metadata-fanarttv/issues",

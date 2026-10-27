@@ -71,7 +71,8 @@ func (s *runtimeServer) Configure(_ context.Context, req *pluginv1.ConfigureRequ
 }
 
 // GetImages returns fanart.tv's artwork for a movie, a series, or one season
-// of a series.
+// of a series, in the requested language, English or no language (see
+// fanart.ForLanguage).
 //
 // Every failure answers empty rather than with an error. The host logs each
 // image provider error once per item, so a missing key or an outage would
@@ -108,6 +109,7 @@ func (s *metadataServer) GetImages(ctx context.Context, req *pluginv1.GetImagesR
 		return &pluginv1.GetImagesResponse{}, nil
 	}
 	s.reporter.recovered()
+	records = fanart.ForLanguage(records, req.GetLanguage())
 
 	response := &pluginv1.GetImagesResponse{Images: make([]*pluginv1.ImageRecord, 0, len(records))}
 	for _, record := range records {

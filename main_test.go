@@ -157,6 +157,34 @@ func TestGetImagesSeriesUsesTVDBAndSeasonScope(t *testing.T) {
 	}
 }
 
+func TestGetImagesKeepsOnlyTheRequestedLanguage(t *testing.T) {
+	server, _, _ := newTestServer(t, nil)
+	languagesFor := func(language string) map[string]int {
+		t.Helper()
+		response, err := server.GetImages(context.Background(), &pluginv1.GetImagesRequest{
+			ItemType:    "movie",
+			ProviderIds: providerIDs(t, map[string]any{"tmdb": "550"}),
+			Language:    language,
+		})
+		if err != nil {
+			t.Fatalf("GetImages(%q) error = %v", language, err)
+		}
+		seen := map[string]int{}
+		for _, image := range response.GetImages() {
+			seen[image.GetLanguage()]++
+		}
+		return seen
+	}
+
+	// The fixture has English, German and language-neutral art.
+	if english := languagesFor("en-AU"); english["de"] != 0 || english["en"] == 0 || english[""] == 0 {
+		t.Errorf("en-AU library got %v, want English and neutral art only", english)
+	}
+	if german := languagesFor("de"); german["de"] != 1 || german["en"] == 0 {
+		t.Errorf("de library got %v, want its German art plus the English fallback", german)
+	}
+}
+
 func TestGetImagesWithoutUsableIDAnswersEmpty(t *testing.T) {
 	server, paths, _ := newTestServer(t, nil)
 	cases := []*pluginv1.GetImagesRequest{

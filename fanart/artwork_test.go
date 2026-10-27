@@ -136,6 +136,38 @@ func TestNilArtworkHasNoRecords(t *testing.T) {
 	}
 }
 
+func TestForLanguage(t *testing.T) {
+	records := []Record{
+		{URL: "neutral", Language: ""},
+		{URL: "english", Language: "en"},
+		{URL: "german", Language: "de"},
+		{URL: "french", Language: "fr"},
+	}
+	cases := []struct {
+		requested string
+		want      string
+	}{
+		{"en", "neutral english"},
+		{"en-AU", "neutral english"},
+		{"DE", "neutral english german"},
+		{"de_DE", "neutral english german"},
+		{"fr-CA", "neutral english french"},
+		{"", "neutral english"},
+	}
+	for _, tc := range cases {
+		var got []string
+		for _, record := range ForLanguage(records, tc.requested) {
+			got = append(got, record.URL)
+		}
+		if strings.Join(got, " ") != tc.want {
+			t.Errorf("ForLanguage(%q) kept %v, want %s", tc.requested, got, tc.want)
+		}
+	}
+	if len(records) != 4 || records[2].URL != "german" {
+		t.Fatalf("ForLanguage changed its input: %v", records)
+	}
+}
+
 func TestRatingBands(t *testing.T) {
 	cases := []struct {
 		likes   flexString

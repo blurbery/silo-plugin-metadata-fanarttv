@@ -41,6 +41,11 @@ as a plugin repository and install and update the plugin from it.
 
 ## How artwork is chosen
 
+fanart.tv's API has no language filter, so the plugin applies the one the TMDB
+plugin asks TMDB for: it returns only artwork in the library's metadata
+language, English as the fallback, and artwork with no language. Artwork in
+any other language never reaches the image picker.
+
 Silo picks artwork per language in provider-chain order, and within one
 provider by rating. The plugin turns fanart.tv's likes into that rating:
 

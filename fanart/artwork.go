@@ -180,6 +180,28 @@ func records(sources []source, season *int) []Record {
 	return out
 }
 
+// ForLanguage keeps the records in the requested language, English as the
+// fallback, and those with no language, the same set the TMDB plugin asks TMDB
+// for. Artwork in any other language never reaches Silo's image picker or its
+// automatic pick. requested may carry a region ("en-AU"); only its language
+// counts. With no requested language, English and language-neutral art remain.
+func ForLanguage(records []Record, requested string) []Record {
+	want := language(requested)
+	if base, _, found := strings.Cut(want, "-"); found {
+		want = base
+	}
+	if base, _, found := strings.Cut(want, "_"); found {
+		want = base
+	}
+	kept := records[:0:0]
+	for _, record := range records {
+		if record.Language == "" || record.Language == "en" || record.Language == want {
+			kept = append(kept, record)
+		}
+	}
+	return kept
+}
+
 // secureURL returns the image URL over HTTPS, or "" when it is not a web URL.
 // fanart.tv's asset links have been plain http:// in older answers; the asset
 // host serves the same paths over HTTPS.

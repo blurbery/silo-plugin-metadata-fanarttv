@@ -13,10 +13,40 @@ It looks titles up by the IDs a primary provider such as TMDB already resolved:
 
 ## Requirements
 
-A Silo build whose metadata service honours the `lookup_images` capability
-flag. It lets an artwork source with no IDs of its own be asked for images by
-its `lookup_provider_ids`. On an older build Silo never asks this plugin for
-artwork, so it installs but does nothing.
+A Silo build that asks an artwork plugin for images by other providers' IDs.
+Two open server changes do that, each with its own capability key:
+
+- `lookup_images`, in
+  [Silo-Server/silo-server#3145](https://github.com/Silo-Server/silo-server/pull/3145);
+- `image_lookup_provider_ids`, in
+  [Silo-Server/silo-server#2259](https://github.com/Silo-Server/silo-server/pull/2259).
+
+The manifest declares both, so the plugin works with whichever lands. On a
+build with neither, Silo never asks the plugin for artwork, so it installs but
+does nothing.
+
+## Network access and credentials
+
+- The plugin makes one kind of request:
+  `GET https://webservice.fanart.tv/v3/movies/{id}` or `.../v3/tv/{id}`. It
+  sends only the title's TMDB, IMDb or TVDB ID. It makes no other outbound
+  connections and never writes anywhere.
+- The keys travel in the `api-key` and `client-key` request headers, never in
+  a URL, so they don't end up in Silo's logs or in an image address.
+- The image URLs it returns point at `https://assets.fanart.tv/`. Silo's image
+  cache downloads them, not the plugin.
+- Answers are kept in memory for 30 minutes, so one refresh, and an
+  administrator paging through a show's seasons, cost one request per title.
+- Release builds carry a fanart.tv project key, the way fanart.tv intends
+  project keys to be used and the way the TMDB plugin carries its TMDB key. A
+  key built into a binary can be read out of it. An administrator's own
+  project key or personal client key goes in the plugin's secret settings.
+
+## Support
+
+Report problems in this repository's
+[issues](https://github.com/blurbery/silo-plugin-metadata-fanarttv/issues), and
+security vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
 
 ## Setup
 
@@ -73,7 +103,9 @@ make build
 `make build-all` cross-compiles the Linux and macOS binaries into `dist/`.
 Pushing a `v*` tag that matches `manifest.json`'s version publishes a release
 with the binaries, `checksums.txt` and `catalog.json` (written by
-`cmd/catalog`).
+`cmd/catalog`). When the `SILO_PLUGINS_DISPATCH_TOKEN` secret is set, the
+release also notifies the approved community catalogue
+(`Silo-Community/silo-plugins`).
 
 ## Licence
 

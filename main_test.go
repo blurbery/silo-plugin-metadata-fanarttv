@@ -366,6 +366,11 @@ func TestManifestDeclaresArtworkLookup(t *testing.T) {
 	if fmt.Sprint(lookup) != "[tmdb imdb tvdb]" {
 		t.Errorf("lookup_provider_ids = %v", lookup)
 	}
+	// A host built with Silo-Server/silo-server#2259 reads this key instead.
+	imageLookup, _ := metadata["image_lookup_provider_ids"].([]any)
+	if fmt.Sprint(imageLookup) != "[tmdb imdb tvdb]" {
+		t.Errorf("image_lookup_provider_ids = %v", imageLookup)
+	}
 	if _, bulk := metadata["bulk_lookup_limit"]; bulk {
 		t.Error("bulk_lookup_limit would put an artwork source into the ratings enrichment pass")
 	}

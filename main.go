@@ -4,7 +4,8 @@
 // metadata: Search and GetMetadata answer empty, and GetImages looks titles up
 // by the TMDB, IMDb or TVDB ID a primary provider such as TMDB resolved. The
 // host asks it for images by those IDs because the manifest declares
-// lookup_images.
+// lookup_images (Silo-Server/silo-server#3145) and image_lookup_provider_ids
+// (Silo-Server/silo-server#2259); each host reads the key it supports.
 package main
 
 import (
